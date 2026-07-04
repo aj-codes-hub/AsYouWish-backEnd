@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const { generateToken } = require('../jwt');
+const User = require("../models/user");
+const { generateToken } = require("../jwt");
 
 // Register
 const register = async (req, res) => {
