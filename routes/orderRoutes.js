@@ -1,7 +1,7 @@
 // src/routes/orderRoutes.js
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
+const { protect } = require('../../middleware/auth');
 const {
   createOrder,
   getOrders,
@@ -9,7 +9,7 @@ const {
   updateOrderStatus,
   cancelOrder,
   getUserOrders,
-} = require('../controllers/orderController');
+} = require('../../controllers/orderController');
 
 // User routes
 router.post('/', protect, createOrder);

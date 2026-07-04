@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const connectDB = require('./src/config/db');
+const connectDB = require('./config/db');
 
 dotenv.config();
 
@@ -18,10 +18,10 @@ app.get('/', (req, res) => {
   res.json({ message: 'AS YOU WISH API is running' });
 });
 
-app.use('/api/auth', require('./src/routes/authRoutes'));
-app.use('/api/products', require('./src/routes/productRoutes'));
-app.use('/api/orders', require('./src/routes/orderRoutes'));
-app.use('/api/admin', require('./src/routes/adminRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/products', require('./routes/productRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 module.exports = app;
 
