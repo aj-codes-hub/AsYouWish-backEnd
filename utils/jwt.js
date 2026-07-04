@@ -1,3 +1,4 @@
+// utils/jwt.js
 const jwt = require('jsonwebtoken');
 
 const generateToken = (userId) => {
@@ -6,8 +7,4 @@ const generateToken = (userId) => {
   });
 };
 
-const verifyToken = (token) => {
-  return jwt.verify(token, process.env.JWT_SECRET);
-};
-
-module.exports = { generateToken, verifyToken };
+module.exports = { generateToken };

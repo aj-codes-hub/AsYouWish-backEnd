@@ -1,7 +1,7 @@
-const User = require("../models/user");
-const { generateToken } = require("../jwt");
+// controllers/authController.js
+const User = require('../models/User');
+const { generateToken } = require('../utils/jwt');
 
-// Register
 const register = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
@@ -21,7 +21,6 @@ const register = async (req, res) => {
   }
 };
 
-// Login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -43,7 +42,6 @@ const login = async (req, res) => {
   }
 };
 
-// Profile
 const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
