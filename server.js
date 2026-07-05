@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -5,14 +6,21 @@ const connectDB = require('./config/db');
 
 dotenv.config();
 
-console.log('🔍 Environment:', process.env.NODE_ENV || 'development');
-console.log('🔍 MONGODB_URI:', process.env.MONGODB_URI ? '✅ Set' : '❌ Missing');
-
 const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// ✅ Har request se pehle DB connect hone ka wait karein (serverless-safe)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({ message: 'Database connection failed' });
+  }
+});
 
 app.get('/', (req, res) => {
   res.json({ message: 'AS YOU WISH API is running' });
