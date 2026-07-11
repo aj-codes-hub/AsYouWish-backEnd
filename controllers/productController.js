@@ -174,10 +174,40 @@ const deleteProduct = async (req, res) => {
     }
 };
 
+const addReview = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const { Rating, message, mainImage, moreImages } = req.body;
+
+    const newReview = {
+      customerName: req.user.name,
+      email: req.user.email,
+      userId: req.user.id,
+      Rating: Number(Rating),
+      message,
+      mainImage: mainImage || '',
+      moreImages: moreImages || [],
+      date: new Date(),
+    };
+
+    product.review.unshift(newReview);
+    await product.save();
+
+    res.status(201).json(product.review);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
     getProducts,
     getProductById,
     createProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    addReview,
 };
