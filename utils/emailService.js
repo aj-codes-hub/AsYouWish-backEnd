@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendOrderNotification = async (orderData) => {
-  onsole.log('📧 Attempting to send email...'); // ✅ ADD
+  console.log('📧 Attempting to send email...'); // ✅ ADD
   console.log('📧 Order data:', orderData); // ✅ ADD
   const { customerName, customerEmail, orderId, total, items, shippingAddress } = orderData;
 
