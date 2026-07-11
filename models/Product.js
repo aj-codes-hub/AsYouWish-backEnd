@@ -1,5 +1,19 @@
+// BackEnd/src/models/Product.js
 const mongoose = require('mongoose');
 
+// ✅ ReviewSchema PEHLE define karo
+const ReviewSchema = new mongoose.Schema({
+  customerName: { type: String, required: true },
+  email: { type: String },
+  Rating: { type: Number, required: true, min: 1, max: 5 },
+  message: { type: String, required: true },
+  mainImage: { type: String, default: '' },
+  moreImages: { type: [String], default: [] },
+  date: { type: Date, default: Date.now },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+});
+
+// ✅ Phir ProductSchema define karo
 const ProductSchema = new mongoose.Schema({
   title: { type: String, required: true },
   price: { type: Number, required: true },
@@ -17,20 +31,10 @@ const ProductSchema = new mongoose.Schema({
   color: { type: String, default: '' },
   size: { type: String, default: '' },
   rating: { type: Number, default: 0 },
- review: { type: [ReviewSchema], default: [] },
   Event: { type: String, default: '' },
+  // ✅ ReviewSchema ab accessible hai
+  review: { type: [ReviewSchema], default: [] },
   createdAt: { type: Date, default: Date.now },
-});
-
-const ReviewSchema = new mongoose.Schema({
-  customerName: { type: String, required: true },
-  email: { type: String },
-  Rating: { type: Number, required: true, min: 1, max: 5 },
-  message: { type: String, required: true },
-  mainImage: { type: String, default: '' },
-  moreImages: { type: [String], default: [] },
-  date: { type: Date, default: Date.now },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 
 module.exports = mongoose.model('Product', ProductSchema);
