@@ -1,7 +1,8 @@
 // src/controllers/orderController.js
 const Order = require('../models/Order');
+const { sendOrderNotification } = require('../utils/emailService');
 
-// Create order
+
 const createOrder = async (req, res) => {
   try {
     const {
@@ -20,11 +21,23 @@ const createOrder = async (req, res) => {
       orderStatus: 'pending',
     });
 
+    // ✅ Send email notification to admin
+    await sendOrderNotification({
+      customerName: shippingAddress.name,
+      customerEmail: shippingAddress.email,
+      orderId: order.orderId,
+      total: totalAmount,
+      items: products.length,
+      products: products,
+      shippingAddress: `${shippingAddress.address}, ${shippingAddress.city}`,
+    });
+
     res.status(201).json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Get all orders (Admin only)
 const getOrders = async (req, res) => {
