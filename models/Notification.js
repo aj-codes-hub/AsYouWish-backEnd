@@ -1,4 +1,3 @@
-// BackEnd/src/models/Notification.js
 const mongoose = require('mongoose');
 
 const NotificationSchema = new mongoose.Schema({
@@ -10,7 +9,29 @@ const NotificationSchema = new mongoose.Schema({
     default: 'order' 
   },
   read: { type: Boolean, default: false },
-  data: { type: Object, default: {} },
+  data: {
+    orderId: { type: String },
+    customerName: { type: String },
+    customerEmail: { type: String },
+    customerPhone: { type: String },
+    shippingAddress: {
+      address: { type: String },
+      city: { type: String },
+      zipCode: { type: String },
+    },
+    total: { type: Number },
+    items: { type: Number },
+    products: [
+      {
+        title: { type: String },
+        price: { type: Number },
+        quantity: { type: Number },
+        mainImage: { type: String },
+      }
+    ],
+    paymentMethod: { type: String },
+    orderStatus: { type: String },
+  },
   createdAt: { type: Date, default: Date.now },
 });
 
