@@ -1,6 +1,7 @@
 // src/controllers/orderController.js
 const Order = require('../models/Order');
 const { sendOrderNotification } = require('../utils/emailService');
+const Notification = require('../models/Notification');
 
 
 const createOrder = async (req, res) => {
