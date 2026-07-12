@@ -49,18 +49,6 @@ await Notification.create({
   },
 });
 
-    // ✅ Send email
-    await sendOrderNotification({
-      customerName: shippingAddress.name,
-      customerEmail: shippingAddress.email,
-      orderId: order.orderId,
-      total: totalAmount,
-      items: products.length,
-      products: products,
-      shippingAddress: `${shippingAddress.address}, ${shippingAddress.city}`,
-    });
-
-
     // ✅ Send email notification to admin
     await sendOrderNotification({
       customerName: shippingAddress.name,
