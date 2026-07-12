@@ -21,6 +21,30 @@ const createOrder = async (req, res) => {
       orderStatus: 'pending',
     });
 
+     await Notification.create({
+      title: '🛍️ New Order!',
+      message: `Order #${order.orderId} received from ${shippingAddress.name}`,
+      type: 'order',
+      data: {
+        orderId: order.orderId,
+        customerName: shippingAddress.name,
+        total: totalAmount,
+        orderId: order._id,
+      },
+    });
+
+    // ✅ Send email
+    await sendOrderNotification({
+      customerName: shippingAddress.name,
+      customerEmail: shippingAddress.email,
+      orderId: order.orderId,
+      total: totalAmount,
+      items: products.length,
+      products: products,
+      shippingAddress: `${shippingAddress.address}, ${shippingAddress.city}`,
+    });
+
+
     // ✅ Send email notification to admin
     await sendOrderNotification({
       customerName: shippingAddress.name,

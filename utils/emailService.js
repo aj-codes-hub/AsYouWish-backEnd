@@ -45,7 +45,7 @@ const sendOrderNotification = async (orderData) => {
 
         <div style="text-align: center; margin-top: 20px; padding: 15px; background: #B76E79; color: white; border-radius: 8px;">
           <p style="margin: 0;">AS YOU WISH — Admin Panel</p>
-          <p style="margin: 0; font-size: 12px;">Login to manage orders: <a href="https://your-domain.com/admin" style="color: white;">Admin Panel</a></p>
+          <p style="margin: 0; font-size: 12px;">Login to manage orders: <a href="https://as-you-wish-gules.vercel.app/admin/dashboard" style="color: white;">Admin Panel</a></p>
         </div>
       </div>
     `,
