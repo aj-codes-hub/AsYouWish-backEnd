@@ -12,6 +12,7 @@ const {
 
 const {
   getNotifications,
+  getNotificationById, 
   markNotificationRead,
   markAllNotificationsRead,
   deleteNotification,
@@ -22,6 +23,7 @@ router.put('/notifications/:id/read', markNotificationRead);
 router.put('/notifications/read-all', markAllNotificationsRead);
 router.delete('/notifications/:id', deleteNotification);
 router.get('/notifications/:id', getNotificationById);
+
 
 
 // All routes require admin authentication
