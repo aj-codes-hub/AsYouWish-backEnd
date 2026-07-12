@@ -9,6 +9,7 @@ const {
   deleteUser,
 } = require('../controllers/adminController');
 
+
 const {
   getNotifications,
   markNotificationRead,
@@ -20,6 +21,7 @@ router.get('/notifications', getNotifications);
 router.put('/notifications/:id/read', markNotificationRead);
 router.put('/notifications/read-all', markAllNotificationsRead);
 router.delete('/notifications/:id', deleteNotification);
+router.get('/notifications/:id', getNotificationById);
 
 
 // All routes require admin authentication
