@@ -195,6 +195,11 @@ const addReview = async (req, res) => {
     };
 
     product.review.unshift(newReview);
+    
+    // ✅ CALCULATE AVERAGE RATING
+    const totalRating = product.review.reduce((sum, r) => sum + r.Rating, 0);
+    product.rating = totalRating / product.review.length;
+    
     await product.save();
 
     res.status(201).json(product.review);
