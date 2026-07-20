@@ -62,4 +62,52 @@ const getSubscribers = async (req, res) => {
   }
 };
 
-module.exports = { subscribe, unsubscribe, getSubscribers };
+const unsubscribeByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+    
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const subscriber = await Subscriber.findOneAndUpdate(
+      { email },
+      { isActive: false },
+      { new: true }
+    );
+    
+    if (!subscriber) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    res.send(`
+      <html>
+        <head>
+          <title>Unsubscribed</title>
+          <style>
+            body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f5f5f5; }
+            .container { background: white; padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-width: 400px; }
+            .icon { font-size: 50px; color: #B76E79; }
+            h1 { color: #333; }
+            p { color: #666; }
+            .btn { display: inline-block; background: #B76E79; color: white; padding: 10px 25px; border-radius: 25px; text-decoration: none; margin-top: 15px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="icon">📧</div>
+            <h1>Unsubscribed Successfully</h1>
+            <p>You have been unsubscribed from AS YOU WISH notifications.</p>
+            <p>We're sorry to see you go!</p>
+            <a href="${process.env.FRONTEND_URL || 'https://your-frontend.vercel.app'}" class="btn">Visit Website</a>
+          </div>
+        </body>
+      </html>
+    `);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+module.exports = { subscribe, unsubscribe, getSubscribers, unsubscribeByEmail };

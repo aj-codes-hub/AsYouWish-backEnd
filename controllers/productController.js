@@ -2,6 +2,7 @@
 const Product = require('../models/Product');
 const mongoose = require('mongoose');
 const cloudinary = require('cloudinary').v2;
+const { sendProductNotificationToSubscribers } = require('../utils/emailService');
 
 // ✅ Cloudinary Configuration
 cloudinary.config({
@@ -91,6 +92,9 @@ const createProduct = async (req, res) => {
         }
         
         const product = await Product.create(productData);
+
+        await sendProductNotificationToSubscribers(product);
+
         res.status(201).json(product);
     } catch (error) {
         console.error('Create product error:', error);
