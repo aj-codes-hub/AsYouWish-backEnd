@@ -62,6 +62,25 @@ const getSubscribers = async (req, res) => {
   }
 };
 
+const getRandomSubscribers = async (req, res) => {
+  try {
+    const { count = 2 } = req.query;
+    const limit = Math.min(parseInt(count) || 2, 50); // ✅ Max 50
+    
+    const subscribers = await Subscriber.aggregate([
+      { $match: { isActive: true } },
+      { $sample: { size: limit } }
+    ]);
+    
+    res.json({
+      count: subscribers.length,
+      subscribers: subscribers.map(s => s.email),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const unsubscribeByEmail = async (req, res) => {
   try {
     const { email } = req.query;
@@ -110,4 +129,4 @@ const unsubscribeByEmail = async (req, res) => {
 };
 
 
-module.exports = { subscribe, unsubscribe, getSubscribers, unsubscribeByEmail };
+module.exports = { subscribe, unsubscribe, getSubscribers, unsubscribeByEmail, getRandomSubscribers };

@@ -3,6 +3,8 @@ const Product = require('../models/Product');
 const mongoose = require('mongoose');
 const cloudinary = require('cloudinary').v2;
 const { sendProductNotificationToSubscribers } = require('../utils/emailService');
+const { sendProductNotificationToRandomSubscribers } = require('../utils/emailService');
+
 
 // ✅ Cloudinary Configuration
 cloudinary.config({
@@ -92,6 +94,13 @@ const createProduct = async (req, res) => {
         }
         
         const product = await Product.create(productData);
+
+        
+    // ✅ Send notification to random subscribers
+    if (productData.notifySubscribers && productData.subscriberCount > 0) {
+      const count = Math.min(parseInt(productData.subscriberCount) || 2, 50);
+      await sendProductNotificationToRandomSubscribers(product, count);
+    }
 
         await sendProductNotificationToSubscribers(product);
 
