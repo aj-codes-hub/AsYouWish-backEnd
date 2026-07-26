@@ -84,5 +84,38 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const socialLogin = async (req, res) => {
+  try {
+    const { email, name, provider, providerId, photoURL } = req.body;
+    
+    let user = await User.findOne({ email });
+    
+    if (!user) {
+      user = await User.create({
+        name: name || 'User',
+        email,
+        password: providerId + 'social_' + provider,
+        phone: '',
+        role: 'user',
+        isActive: true,
+        socialProvider: provider,
+        socialId: providerId,
+        photoURL: photoURL || '',
+      });
+    }
+    
+    res.json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      photoURL: user.photoURL || '',
+      token: generateToken(user.id),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-module.exports = { register, login, getProfile, updateProfile };
+
+module.exports = { register, login, getProfile, updateProfile, socialLogin };

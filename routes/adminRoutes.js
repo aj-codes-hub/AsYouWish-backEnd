@@ -7,6 +7,7 @@ const {
   getUsers,
   updateUser,
   deleteUser,
+  getAllUsers,
 } = require('../controllers/adminController');
 
 
@@ -28,10 +29,11 @@ router.get('/notifications/:id', getNotificationById);
 
 // All routes require admin authentication
 router.use(protect, admin);
-
 router.get('/stats', getAdminStats);
-router.get('/users', getUsers);
-router.put('/users/:id', updateUser);
+router.get('/users', protect, admin, getAllUsers, getUsers);
+router.put('/users/:id', protect, admin, updateUser);
 router.delete('/users/:id', deleteUser);
+
+
 
 module.exports = router;
