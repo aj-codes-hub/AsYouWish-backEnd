@@ -17,9 +17,30 @@ const protect = async (req, res, next) => {
   if (!token) res.status(401).json({ message: 'Not authorized, no token' });
 };
 
+// ✅ NEW: Optional Authentication (Guest allowed)
+const optionalAuth = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.startsWith('Bearer') 
+      ? req.headers.authorization.split(' ')[1] 
+      : null;
+    
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.userId).select('-password');
+      if (user) {
+        req.user = user;
+      }
+    }
+    next();
+  } catch (error) {
+    // Token invalid - treat as guest
+    next();
+  }
+};
+
 const admin = (req, res, next) => {
   if (req.user?.role === 'admin') next();
   else res.status(403).json({ message: 'Not authorized as admin' });
 };
 
-module.exports = { protect, admin };
+module.exports = { protect, admin, optionalAuth };

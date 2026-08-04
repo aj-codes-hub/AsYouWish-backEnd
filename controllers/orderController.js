@@ -3,7 +3,6 @@ const Order = require('../models/Order');
 const { sendOrderNotification } = require('../utils/emailService');
 const Notification = require('../models/Notification');
 
-
 const createOrder = async (req, res) => {
   try {
     const {
@@ -11,45 +10,60 @@ const createOrder = async (req, res) => {
       totalAmount,
       shippingAddress,
       paymentMethod,
+      userId,        // ✅ Guest se aayega
+      isGuest,       // ✅ Guest flag
     } = req.body;
 
+    // ✅ FIX: User ID logic
+    let userID = null;
+    if (req.user) {
+      // Logged in user
+      userID = req.user.id;
+    } else if (userId) {
+      // Guest user with provided userId
+      userID = userId;
+    }
+
     const order = await Order.create({
-      user: req.user.id,
+      user: userID,  // ✅ NULL allowed for guests
       products,
       totalAmount,
       shippingAddress,
       paymentMethod,
       orderStatus: 'pending',
+      isGuest: isGuest || !req.user, // ✅ Guest flag
     });
 
-await Notification.create({
-  title: '🛍️ New Order!',
-  message: `Order #${order.orderId} received from ${shippingAddress.name}`,
-  type: 'order',
-  data: {
-    orderId: order.orderId,
-    customerName: shippingAddress.name,
-    customerEmail: shippingAddress.email,
-    customerPhone: shippingAddress.phone,
-    shippingAddress: {
-      address: shippingAddress.address,
-      city: shippingAddress.city,
-      zipCode: shippingAddress.zipCode,
-    },
-    total: totalAmount,
-    items: products.length,
-    products: products.map(p => ({
-      title: p.title,
-      price: p.price,
-      quantity: p.quantity,
-      mainImage: p.mainImage,
-    })),
-    paymentMethod: paymentMethod,
-    orderStatus: 'pending',
-  },
-});
+    // ✅ Notification (Admin ko inform karo)
+    await Notification.create({
+      title: '🛍️ New Order!',
+      message: `Order #${order.orderId} received from ${shippingAddress.name}${isGuest ? ' (Guest)' : ''}`,
+      type: 'order',
+      data: {
+        orderId: order.orderId,
+        customerName: shippingAddress.name,
+        customerEmail: shippingAddress.email,
+        customerPhone: shippingAddress.phone,
+        shippingAddress: {
+          address: shippingAddress.address,
+          city: shippingAddress.city,
+          zipCode: shippingAddress.zipCode,
+        },
+        total: totalAmount,
+        items: products.length,
+        products: products.map(p => ({
+          title: p.title,
+          price: p.price,
+          quantity: p.quantity,
+          mainImage: p.mainImage,
+        })),
+        paymentMethod: paymentMethod,
+        orderStatus: 'pending',
+        isGuest: isGuest || !req.user,
+      },
+    });
 
-    // ✅ Send email notification to admin
+    // ✅ Email notification
     await sendOrderNotification({
       customerName: shippingAddress.name,
       customerEmail: shippingAddress.email,
@@ -62,10 +76,10 @@ await Notification.create({
 
     res.status(201).json(order);
   } catch (error) {
+    console.error('Order creation error:', error);
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Get all orders (Admin only)
 const getOrders = async (req, res) => {
@@ -79,7 +93,7 @@ const getOrders = async (req, res) => {
   }
 };
 
-// Get order by ID
+// ✅ FIX: Get order by ID (Guest allow)
 const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
@@ -89,9 +103,17 @@ const getOrderById = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Check if user is authorized
-    if (order.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Not authorized' });
+    // ✅ Check authorization
+    if (req.user) {
+      // Logged in user - check ownership or admin
+      if (order.user && order.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
+    } else {
+      // Guest - only allow if order has no user (guest order)
+      if (order.user) {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
     }
 
     res.json(order);
